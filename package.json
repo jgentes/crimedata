@@ -1,0 +1,21 @@
+{
+  "name": "citizenrequest",
+  "version": "0.1.0",
+  "description": "CitizenRequests API provides a simple way to submit requests to the Spokane Valley e-Gov system, check the status of existing issues, and correspond with agents regarding issues.",
+  "main": "web.js",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:jgentes/citizenrequests.git"
+  },
+  "author": "James Gentes",
+  "license": "ISC",
+  "dependencies": {
+    "casperjs": "^1.1.0-beta3",
+    "phantomjs": "^1.9.7-8",
+    "logfmt": "^1.1.2",
+    "express": "^4.4.3"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
