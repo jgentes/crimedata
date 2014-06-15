@@ -30,7 +30,7 @@ casper.test.begin('Submit request to Spokane Valley e-Gov', function(test) {
            //this.click("form[name=frmRequestAction] input[type=button][value='SEND REQUEST']");
        });
    casper.then(function() {
-       this.wait(5000, function() {
+       this.wait(1000, function() {
            //test.assertTitle('E-Gov Services City of Spokane Valley');
            //tracking_number = this.fetchText('.groupSmall p b');
            tracking_number = 5000;
