@@ -1,4 +1,3 @@
-// web.js
 var express = require("express");
 var logfmt = require("logfmt");
 var spawn = require('child_process').spawn;
@@ -15,9 +14,10 @@ function spokanevalley_submit(actionid, desc) {
   
   child.stdout.on('data', function (data) {
     data = data.toString();
-    console.log('stdout:' + data);
-    if (data.split(":")) {
-      console.log(data);
+    //console.log('stdout:' + data);
+    if (data.search("Tracking Number:") === 0) {
+      var tracking_number = data.substr(17, data.length - 17);
+      console.log("Tracking Number: " + tracking_number);
     };
   });
   
