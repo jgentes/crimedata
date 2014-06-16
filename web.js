@@ -7,10 +7,10 @@ app.use(logfmt.requestLogger());
 
 function spokanevalley_submit(actionid, desc, res) {
   
-  actionid = "--actionid=" + 13894;
-  desc = "--desc=" + "Here's a lengthy description!";
+  console.log("Action ID: " + actionid);
+  console.log("Description: " + desc);
   
-  var child = spawn("casperjs", ["test", "spokanevalley/submit.js", actionid, desc]);
+  var child = spawn("casperjs", ["test", "spokanevalley/submit.js", "--actionid=" + actionid, "--desc=" + desc]);
   
   child.stdout.on('data', function (data) {
     data = data.toString();
@@ -21,7 +21,7 @@ function spokanevalley_submit(actionid, desc, res) {
       res.send('Tracking Number: ' + tracking_number);
     };
     
-    //child.on('exit', function() {
+    //child.on('exit', function() { #useful for identifying the end of the process
     //  console.log('FINISHED!');
       //process.exit();
     //});
