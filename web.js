@@ -5,7 +5,7 @@ var app = express();
 
 app.use(logfmt.requestLogger());
 
-function spokanevalley_submit(actionid, desc) {
+function spokanevalley_submit(actionid, desc, res) {
   
   actionid = "--actionid=" + 13894;
   desc = "--desc=" + "Here's a lengthy description!";
@@ -14,27 +14,28 @@ function spokanevalley_submit(actionid, desc) {
   
   child.stdout.on('data', function (data) {
     data = data.toString();
-    //console.log('stdout:' + data);
+    //console.log(data); #uncomment to see casper data log
     if (data.search("Tracking Number:") === 0) {
       var tracking_number = data.substr(17, data.length - 17);
       console.log("Tracking Number: " + tracking_number);
+      res.send('Tracking Number: ' + tracking_number);
     };
-  });
+    
+    //child.on('exit', function() {
+    //  console.log('FINISHED!');
+      //process.exit();
+    //});
   
-  child.on('exit', function() {
-    console.log('FINISHED!');
-    process.exit()
   });
   
 };
 
-spokanevalley_submit();
-
-app.get('/', function(req, res) {
-  res.send('Hello World!');
+app.get('/new', function(req, res) {
+  var actionid = req.query.actionid;
+  var desc = req.query.desc;
+  var tracking_number = spokanevalley_submit(actionid, desc, res);
+  //res.send('Tracking Number: ' + tracking_number);
 });
-
-
 
 var port = Number(process.env.PORT);
 app.listen(port, function() {
