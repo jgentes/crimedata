@@ -51,8 +51,8 @@ function spokanevalley_status(tracking_number, res) {
           var end = body.search('http://www.egovlink.com/spokanevalley/img/clearshim.gif');
           
           if (start === 27) {
-            start = body.search('C.A.R.E.S. Lookup') + 23;
-            end = end - 40;
+            start = body.search('C.A.R.E.S. Lookup') + 25;
+            end = end - 44;
           } else {
             end = end - 84;
           }
