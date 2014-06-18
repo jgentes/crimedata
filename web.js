@@ -54,6 +54,7 @@ function spokanevalley_status(tracking_number, res) {
             start = body.search('C.A.R.E.S. Lookup') + 25;
             end = end - 45;
           } else {
+            start = start + 2;
             end = end - 84;
           }
           
