@@ -47,12 +47,12 @@ function spokanevalley_status(tracking_number, res) {
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
           
-          var start = body.search('C.A.R.E.S. Activity') + 29;
+          var start = body.search('C.A.R.E.S. Activity') + 28;
           var end = body.search('http://www.egovlink.com/spokanevalley/img/clearshim.gif');
           
-          if (start === 28) {
-            start = body.search('C.A.R.E.S. Lookup') + 24;
-            end = end - 42;
+          if (start === 27) {
+            start = body.search('C.A.R.E.S. Lookup') + 23;
+            end = end - 40;
           } else {
             end = end - 84;
           }
