@@ -22,12 +22,12 @@ function spokanevalley_submit(actionid, desc, res) {
       
       var tracking_number = data.substr(17, data.length - 17);
       console.log("Tracking Number: " + tracking_number);
-      res.send(201, 'Tracking Number: ' + tracking_number);
+      res.json(201, { tracking_mumber: tracking_number });
       
     } else if (data.search("Error:") === 0) {
       
       var response = data.substr(7, data.length - 7);
-      res.send(202, 'Error: ' + response);
+      res.json(202, { error: response });
       var error = new Error(response);
       console.log(error.stack)
       
