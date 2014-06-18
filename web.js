@@ -20,13 +20,13 @@ function spokanevalley_submit(actionid, desc, res) {
     //console.log(data); //REQUIRED FOR DEBUGGING CASPER - uncomment to see casper data log
     if (data.search("Tracking Number:") === 0) {
       
-      var tracking_number = data.substr(17, data.length - 17);
+      var tracking_number = data.substr(17, data.length - 19);
       console.log("Tracking Number: " + tracking_number);
       res.json(201, { tracking_mumber: tracking_number });
       
     } else if (data.search("Error:") === 0) {
       
-      var response = data.substr(7, data.length - 7);
+      var response = data.substr(7, data.length - 9);
       res.json(202, { error: response });
       var error = new Error(response);
       console.log(error.stack)
