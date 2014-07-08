@@ -46,22 +46,27 @@ function spokanevalley_status(tracking_number, res) {
     { form: { REQUEST_ID: tracking_number } },
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
+          var results = [];
+          var jsdom = require("jsdom");
           
-          var start = body.search('C.A.R.E.S. Activity') + 28;
-          var end = body.search('http://www.egovlink.com/spokanevalley/img/clearshim.gif');
-          
-          if (start === 27) {
-            start = body.search('C.A.R.E.S. Lookup') + 25;
-            end = end - 45;
-          } else {
-            start = start + 2;
-            end = end - 84;
-          }
-          
-          var status = body.substr(start, end - start);
-          console.log(status);
-          
-          res.json(200, { status: status });
+          jsdom.env(body, ["http://code.jquery.com/jquery.js"],
+          function (errors, window) {
+            
+            var comments = window.$("div:contains('Status  - Date of Activity') ~ div").each(function () {
+              var comment = window.$(this).text();
+              var start = comment.search(' - ');
+              if (start > -1) {
+                var status = comment.substr(0, start);
+                var date = comment.substr(start + 3, comment.length - start);
+                var userbracket = window.$(this).next('div').children('strong').text();
+                var user = userbracket.substr(1, userbracket.length - 4);
+                var message = window.$(this).next('div').children('em').text();
+                results.push({date: date, status: status, user: user, message: message});
+                console.log("results: " + JSON.stringify(results));
+              }
+            });
+            res.json(200, results);
+          });
         }
     }
   );
