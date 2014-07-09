@@ -27,7 +27,7 @@ function spokanevalley_submit(actionid, desc, res) {
     } else if (data.search("Error:") === 0) {
       
       var response = data.substr(7, data.length - 8);
-      res.json(202, { error: response });
+      res.json(422, { error: response });
       var error = new Error(response);
       console.log(error.stack)
       
@@ -47,12 +47,13 @@ function spokanevalley_status(tracking_number, res) {
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
           var results = [];
+          var id = 0;
           var jsdom = require("jsdom");
           
           jsdom.env(body, ["http://code.jquery.com/jquery.js"],
           function (errors, window) {
             
-            var comments = window.$("div:contains('Status  - Date of Activity') ~ div").each(function () {
+            var comments = window.$(window.$("div:contains('Status  - Date of Activity') ~ div").get().reverse()).each(function () {
               var comment = window.$(this).text();
               var start = comment.search(' - ');
               if (start > -1) {
@@ -61,7 +62,8 @@ function spokanevalley_status(tracking_number, res) {
                 var userbracket = window.$(this).next('div').children('strong').text();
                 var user = userbracket.substr(1, userbracket.length - 4);
                 var message = window.$(this).next('div').children('em').text();
-                results.push({date: date, status: status, user: user, message: message});
+                results.push({id: id, date: date, status: status, user: user, message: message});
+                id =+ 1;
                 console.log("results: " + JSON.stringify(results));
               }
             });
@@ -77,15 +79,15 @@ app.post('/new', bodyParser(), function(req, res) {
   var actionid = req.body.actionid;
   var desc = req.body.desc;
   if (actionid === undefined || desc === undefined) {
-    res.json(202, { error: "ActionID and Description are required!" });
+    res.json(422, { error: "ActionID and Description are required!" });
   }
   var tracking_number = spokanevalley_submit(actionid, desc, res);
 });
 
-app.post('/status', bodyParser(), function(req, res) {
-  var tracking_number = req.body.tracking_number;
+app.get('/status/:tracking_number', function(req, res) {
+  var tracking_number = req.params.tracking_number;
   if (tracking_number === undefined) {
-    res.json(202, { error: "tracking_number is required!" });
+    res.json(422, { error: "tracking_number is required!" });
   }
   var status = spokanevalley_status(tracking_number, res);
 });
