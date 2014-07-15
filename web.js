@@ -37,6 +37,35 @@ function spokanevalley_submit(actionid, desc, res) {
   
 };
 
+function spokanevalley_update(tracking_number, desc, res) {
+  
+  console.log("Tracking Number: " + tracking_number);
+  console.log("Description: " + desc);
+  
+  var child = spawn("casperjs", ["test", "spokanevalley/update.js", "--desc=" + desc, "--tracking_number=" + tracking_number]);
+  
+  child.stdout.on('data', function (data) {
+    data = data.toString();
+    //console.log(data); //REQUIRED FOR DEBUGGING CASPER - uncomment to see casper data log
+    if (data.search("Tracking Number:") === 0) {
+      
+      var tracking_number = data.substr(17, data.length - 18);
+      console.log("Tracking Number: " + tracking_number);
+      res.json(201, { tracking_number: tracking_number });
+      
+    } else if (data.search("Error:") === 0) {
+      
+      var response = data.substr(7, data.length - 8);
+      res.json(422, { error: response });
+      var error = new Error(response);
+      console.log(error.stack)
+      
+    };
+    
+  });
+  
+};
+
 function spokanevalley_status(tracking_number, res) {
   
   console.log("Tracking Number: " + tracking_number);
@@ -69,7 +98,7 @@ function spokanevalley_status(tracking_number, res) {
             });
             res.json(200, results);
           });
-        }
+        } else { return error; }
     }
   );
   
@@ -80,16 +109,28 @@ app.post('/new', bodyParser(), function(req, res) {
   var desc = req.body.desc;
   if (actionid === undefined || desc === undefined) {
     res.json(422, { error: "ActionID and Description are required!" });
+  } else {
+    var tracking_number = spokanevalley_submit(actionid, desc, res);
   }
-  var tracking_number = spokanevalley_submit(actionid, desc, res);
 });
 
 app.get('/status/:tracking_number', function(req, res) {
   var tracking_number = req.params.tracking_number;
   if (tracking_number === undefined) {
     res.json(422, { error: "tracking_number is required!" });
+  } else {
+    var status = spokanevalley_status(tracking_number, res);
   }
-  var status = spokanevalley_status(tracking_number, res);
+});
+
+app.put('/update', bodyParser(), function(req, res) {
+  var tracking_number = req.body.tracking_number;
+  var desc = req.body.desc;
+  if (tracking_number === undefined || desc === undefined) {
+    res.json(422, { error: "tracking_number and description (desc) are required!" });
+  } else {
+    var tracking_number = spokanevalley_update(tracking_number, desc, res);
+  }
 });
 
 app.get('/', function(req, res) {
