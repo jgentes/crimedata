@@ -84,17 +84,17 @@ function spokanevalley_status(tracking_number, res) {
             
             var comments = window.$(window.$("div:contains('Status  - Date of Activity') ~ div").get().reverse()).each(function () {
               var comment = window.$(this).text();
-              var start = comment.search(' - ');
-              if (start > -1) {
+              if (id % 2 == 1) {
+                var start = comment.search(' - ');
                 var status = comment.substr(0, start);
                 var date = comment.substr(start + 3, comment.length - start);
                 var userbracket = window.$(this).next('div').children('strong').text();
                 var user = userbracket.substr(1, userbracket.length - 4);
                 var message = window.$(this).next('div').children('em').text();
                 results.push({id: tracking_number + 'x' + id, date: date, status: status, user: user, message: message});
-                id++;
                 console.log("results: " + JSON.stringify(results));
               }
+              id++;
             });
             res.json(200, results);
           });
