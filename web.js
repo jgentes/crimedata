@@ -92,7 +92,7 @@ function spokanevalley_status(tracking_number, res) {
                 var user = userbracket.substr(1, userbracket.length - 4);
                 var message = window.$(this).next('div').children('em').text();
                 results.push({id: tracking_number + 'x' + id, date: date, status: status, user: user, message: message});
-                id =+ 1;
+                id++;
                 console.log("results: " + JSON.stringify(results));
               }
             });
