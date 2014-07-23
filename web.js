@@ -1,5 +1,5 @@
 var express = require("express");
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var logfmt = require("logfmt");
 var request = require("request");
 var spawn = require('child_process').spawn;
@@ -29,13 +29,13 @@ function spokanevalley_submit(actionid, desc, res) {
       var response = data.substr(7, data.length - 8);
       res.json(422, { error: response });
       var error = new Error(response);
-      console.log(error.stack)
+      console.log(error.stack);
       
-    };
+    }
     
   });
   
-};
+}
 
 function spokanevalley_update(tracking_number, desc, res) {
   
@@ -58,13 +58,13 @@ function spokanevalley_update(tracking_number, desc, res) {
       var response = data.substr(7, data.length - 8);
       res.json(422, { error: response });
       var error = new Error(response);
-      console.log(error.stack)
+      console.log(error.stack);
       
-    };
+    }
     
   });
   
-};
+}
 
 function spokanevalley_status(tracking_number, res) {
   
@@ -102,7 +102,7 @@ function spokanevalley_status(tracking_number, res) {
     }
   );
   
-};
+}
 
 app.post('/new', bodyParser(), function(req, res) {
   var actionid = req.body.actionid;
@@ -110,7 +110,7 @@ app.post('/new', bodyParser(), function(req, res) {
   if (actionid === undefined || desc === undefined) {
     res.json(422, { error: "ActionID and Description are required!" });
   } else {
-    var tracking_number = spokanevalley_submit(actionid, desc, res);
+    spokanevalley_submit(actionid, desc, res);
   }
 });
 
@@ -119,7 +119,7 @@ app.get('/status/:tracking_number', function(req, res) {
   if (tracking_number === undefined) {
     res.json(422, { error: "tracking_number is required!" });
   } else {
-    var status = spokanevalley_status(tracking_number, res);
+    spokanevalley_status(tracking_number, res);
   }
 });
 
@@ -129,7 +129,7 @@ app.put('/update', bodyParser(), function(req, res) {
   if (tracking_number === undefined || desc === undefined) {
     res.json(422, { error: "tracking_number and description (desc) are required!" });
   } else {
-    var tracking_number = spokanevalley_update(tracking_number, desc, res);
+    spokanevalley_update(tracking_number, desc, res);
   }
 });
 
