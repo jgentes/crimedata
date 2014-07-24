@@ -104,6 +104,15 @@ function spokanevalley_status(tracking_number, res) {
   
 }
 
+function inverseMercator(x, y) {
+  var lon = (x / 20037508.34) * 180;
+  var lat = (y / 20037508.34) * 180;
+
+  lat = 180/Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180)) - Math.PI / 2);
+
+  return [lat, lon];
+  }
+
 app.post('/new', bodyParser(), function(req, res) {
   var actionid = req.body.actionid;
   var desc = req.body.desc;
