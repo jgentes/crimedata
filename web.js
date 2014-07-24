@@ -66,7 +66,7 @@ function spokanevalley_update(tracking_number, desc, res) {
   
 }
 
-function spokanevalley_status(tracking_number, res) {
+function spokanevalley_status(tracking_number, showall, res) {
   
   console.log("Tracking Number: " + tracking_number);
   
@@ -82,7 +82,7 @@ function spokanevalley_status(tracking_number, res) {
           jsdom.env(body, ["http://code.jquery.com/jquery.js"],
           function (errors, window) {
             
-            var comments = window.$(window.$("div:contains('Status  - Date of Activity') ~ div").get().reverse()).each(function () {
+            window.$(window.$("div:contains('Status  - Date of Activity') ~ div").get().reverse()).each(function () {
               var comment = window.$(this).text();
               if (id % 2 == 1) {
                 var start = comment.search(' - ');
@@ -91,11 +91,13 @@ function spokanevalley_status(tracking_number, res) {
                 var userbracket = window.$(this).next('div').children('strong').text();
                 var user = userbracket.substr(1, userbracket.length - 4);
                 var message = window.$(this).next('div').children('em').text();
-                results.push({id: tracking_number + 'x' + id, date: date, status: status, user: user, message: message});
-                console.log("results: " + JSON.stringify(results));
+                if ((showall === false && user == "City of Spokane Valley") || showall !== false) {
+                  results.push({id: tracking_number + 'x' + id, date: date, status: status, user: user, message: message});
+                }
               }
               id++;
             });
+            console.log("results: " + JSON.stringify(results));
             res.json(200, results);
           });
         } else { return error; }
@@ -125,10 +127,14 @@ app.post('/new', bodyParser(), function(req, res) {
 
 app.get('/status/:tracking_number', function(req, res) {
   var tracking_number = req.params.tracking_number;
+  var showall = req.query.showall;
+  console.log(showall);
+  if (!showall || showall==='false') { showall = false;
+    console.log(showall);}
   if (tracking_number === undefined) {
     res.json(422, { error: "tracking_number is required!" });
   } else {
-    spokanevalley_status(tracking_number, res);
+    spokanevalley_status(tracking_number, showall, res);
   }
 });
 
