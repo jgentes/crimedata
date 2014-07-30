@@ -100,8 +100,9 @@ function spokanevalley_status(tracking_number, showall, res) {
             });
             console.log("results: " + JSON.stringify(results));
             res.json(200, results);
+            return;
           });
-        } else { return error; }
+        } else { res.json(400, error); return; }
     }
   );
   
@@ -187,14 +188,15 @@ function crime_status(startdate, enddate, citystate, res) {
                     
                     console.log("crimes: " + JSON.stringify(crimes));
                     res.json(200, crimes);
+                    return;
                   });
                   
                   
-                } else { return error; }
+                } else { res.json(400, error); return; }
             }
           );
           
-        } else { return error; }
+        } else { res.json(400, error); return; }
     }
   );
  
