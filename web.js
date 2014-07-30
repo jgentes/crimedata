@@ -3,7 +3,12 @@ var bodyParser = require('body-parser');
 var logfmt = require("logfmt");
 var request = require("request");
 var spawn = require('child_process').spawn;
-var googlegeocodekey = require('./environment').googlegeocodekey;
+
+try {
+  var googlegeocodekey = require('./environment').googlegeocodekey; // hidden with .gitignore
+} catch(err) {
+  googlegeocodekey = process.env.googlegeocodekey; // for heroku
+}
 
 var app = express();
 
