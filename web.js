@@ -145,8 +145,8 @@ function crime_status(startdate, enddate, citystate, res) {
             console.log('Lat: ' + lat, 'Long: ' + long);
             var coords = toMercator(long, lat);
           } catch(err) {
-            console.log(results);
-            res.json(400, err)
+            console.log(err);
+            res.json(400, results)
           }
           
           var xmin = coords[0] - 4585.47681;
@@ -247,6 +247,7 @@ app.get('/', function(req, res) {
 // CRIME MAPPING API
 
 app.get('/crime', function(req, res) {
+  console.log(req);
   var startdate = req.query.startdate;
   var enddate = req.query.enddate;
   var citystate = req.query.citystate;
