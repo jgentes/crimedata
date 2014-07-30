@@ -138,11 +138,16 @@ function crime_status(startdate, enddate, citystate, res) {
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
           
-          var results = JSON.parse(body);
-          var lat = results['results'][0]['geometry']['location']['lat'];
-          var long = results['results'][0]['geometry']['location']['lng'];
-          console.log('Lat: ' + lat, 'Long: ' + long);
-          var coords = toMercator(long, lat);
+          try {
+            var results = JSON.parse(body);
+            var lat = results['results'][0]['geometry']['location']['lat'];
+            var long = results['results'][0]['geometry']['location']['lng'];
+            console.log('Lat: ' + lat, 'Long: ' + long);
+            var coords = toMercator(long, lat);
+          } catch(err) {
+            console.log(results);
+            res.json(400, err)
+          }
           
           var xmin = coords[0] - 4585.47681;
           var xmax = coords[0] + 4586.966585;
