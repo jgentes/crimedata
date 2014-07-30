@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var logfmt = require("logfmt");
 var request = require("request");
 var spawn = require('child_process').spawn;
+var googlegeocodekey = require('environment').googlegeocodekey;
 
 var app = express();
 
@@ -131,8 +132,6 @@ function crime_status(startdate, enddate, citystate, res) {
   console.log("End Date: " + enddate);
   console.log("City, State: " + citystate);
   
-  var googlegeocodekey = 'AIzaSyCSUFXVdY9KTdj9HvxH5kQRqjx39AyRbVo';
-  
   request.get(
     'https://maps.googleapis.com/maps/api/geocode/json?address=' + citystate + '&key=' + googlegeocodekey,
     function (error, response, body) {
@@ -247,7 +246,6 @@ app.get('/', function(req, res) {
 // CRIME MAPPING API
 
 app.get('/crime', function(req, res) {
-  console.log(req);
   var startdate = req.query.startdate;
   var enddate = req.query.enddate;
   var citystate = req.query.citystate;
