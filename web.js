@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var logfmt = require("logfmt");
 var request = require("request");
 var spawn = require('child_process').spawn;
-var googlegeocodekey = require('environment').googlegeocodekey;
+var googlegeocodekey = require('./environment').googlegeocodekey;
 
 var app = express();
 
@@ -143,62 +143,63 @@ function crime_status(startdate, enddate, citystate, res) {
             var long = results['results'][0]['geometry']['location']['lng'];
             console.log('Lat: ' + lat, 'Long: ' + long);
             var coords = toMercator(long, lat);
+          
+            var xmin = coords[0] - 4585.47681;
+            var xmax = coords[0] + 4586.966585;
+            var ymin = coords[1] - 2144.382611;
+            var ymax = coords[1] + 2145.645602;
+            
+            var urlparams = '?db=' + startdate + '+00:00:00&de=' + enddate + '+00:00:00&ccs=AR,AS,BU,DP,DR,DU,FR,HO,VT,RO,SX,TH,VA,VB,WE&add=' + citystate + '&xmin=' + xmin + '&ymin=' + ymin + '&xmax=' + xmax + '&ymax=' + ymax;
+            
+            request.get(
+              'http://www.crimemapping.com/DetailedReport.aspx' + urlparams,
+              function (error, response, body) {
+                  if (!error && response.statusCode == 200) {
+                    var jsdom = require("jsdom");
+            
+                    jsdom.env(body, ["http://code.jquery.com/jquery.js"],
+                    function (errors, window) {
+                      var rows = window.$('.report-grid').find('tr');
+                      var crime_desc = '',
+                          crime_datetime = '',
+                          crime_loc = '',
+                          c1 = '',
+                          c2 = '',
+                          c3 = '',
+                          crime_x = '',
+                          crime_y = '',
+                          crime_coords = [],
+                          crimes = [];
+                      
+                      for (var i=2; i < rows.length; i++) {
+                        crime_desc = rows[i].childNodes[1].childNodes[0].childNodes[0].nodeValue;
+                        crime_datetime = rows[i].childNodes[5].childNodes[0].childNodes[0].nodeValue;
+                        crime_loc = rows[i].attributes.onclick.value;
+                        c1 = crime_loc.indexOf(',');
+                        c2 = crime_loc.indexOf(',', c1 + 1);
+                        c3 = crime_loc.indexOf(',', c2 + 1);
+                        crime_x = crime_loc.substr(c1 + 3, c2 - c1 - 4);
+                        crime_y = crime_loc.substr(c2 + 3, c3 - c2 - 4);
+                        crime_coords = inverseMercator(crime_x, crime_y);
+                        
+                        crimes.push({'description': crime_desc, 'datetime': crime_datetime, 'location': crime_coords});
+                        
+                      }
+                      
+                      console.log("crimes: " + JSON.stringify(crimes));
+                      res.json(200, crimes);
+                      return;
+                    });
+                    
+                    
+                  } else { res.json(400, error); return; }
+              }
+            );
+            
           } catch(err) {
             console.log(err);
-            res.json(400, results)
+            res.json(400, results);
           }
-          
-          var xmin = coords[0] - 4585.47681;
-          var xmax = coords[0] + 4586.966585;
-          var ymin = coords[1] - 2144.382611;
-          var ymax = coords[1] + 2145.645602;
-          
-          var urlparams = '?db=' + startdate + '+00:00:00&de=' + enddate + '+00:00:00&ccs=AR,AS,BU,DP,DR,DU,FR,HO,VT,RO,SX,TH,VA,VB,WE&add=' + citystate + '&xmin=' + xmin + '&ymin=' + ymin + '&xmax=' + xmax + '&ymax=' + ymax;
-          
-          request.get(
-            'http://www.crimemapping.com/DetailedReport.aspx' + urlparams,
-            function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                  var jsdom = require("jsdom");
-          
-                  jsdom.env(body, ["http://code.jquery.com/jquery.js"],
-                  function (errors, window) {
-                    var rows = window.$('.report-grid').find('tr');
-                    var crime_desc = '',
-                        crime_datetime = '',
-                        crime_loc = '',
-                        c1 = '',
-                        c2 = '',
-                        c3 = '',
-                        crime_x = '',
-                        crime_y = '',
-                        crime_coords = [],
-                        crimes = [];
-                    
-                    for (var i=2; i < rows.length; i++) {
-                      crime_desc = rows[i].childNodes[1].childNodes[0].childNodes[0].nodeValue;
-                      crime_datetime = rows[i].childNodes[5].childNodes[0].childNodes[0].nodeValue;
-                      crime_loc = rows[i].attributes.onclick.value;
-                      c1 = crime_loc.indexOf(',');
-                      c2 = crime_loc.indexOf(',', c1 + 1);
-                      c3 = crime_loc.indexOf(',', c2 + 1);
-                      crime_x = crime_loc.substr(c1 + 3, c2 - c1 - 4);
-                      crime_y = crime_loc.substr(c2 + 3, c3 - c2 - 4);
-                      crime_coords = inverseMercator(crime_x, crime_y);
-                      
-                      crimes.push({'description': crime_desc, 'datetime': crime_datetime, 'location': crime_coords});
-                      
-                    }
-                    
-                    console.log("crimes: " + JSON.stringify(crimes));
-                    res.json(200, crimes);
-                    return;
-                  });
-                  
-                  
-                } else { res.json(400, error); return; }
-            }
-          );
           
         } else { res.json(400, error); return; }
     }
