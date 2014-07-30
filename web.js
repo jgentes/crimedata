@@ -131,7 +131,7 @@ function crime_status(startdate, enddate, citystate, res) {
   console.log("End Date: " + enddate);
   console.log("City, State: " + citystate);
   
-  var googlegeocodekey = 'AIzaSyA65tBrLqxjXkCMIZnWJXRH-Cj6W-RN0S8';
+  var googlegeocodekey = 'AIzaSyCSUFXVdY9KTdj9HvxH5kQRqjx39AyRbVo';
   
   request.get(
     'https://maps.googleapis.com/maps/api/geocode/json?address=' + citystate + '&key=' + googlegeocodekey,
