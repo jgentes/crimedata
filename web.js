@@ -213,8 +213,16 @@ function crime_status(startdate, enddate, citystate, res) {
 }
 
 app.post('/new', function(req, res) {
-  var actionid = req.body.actionid;
-  var desc = req.body.desc;
+  var actionid = '',
+      desc = '';
+  
+  if (req.accepts('application/json', 'x-www-form-urlencoded') === 'x-www-form-urlencoded') {
+    actionid = req.body.actionid;
+    desc = req.body.desc;
+  } else if (req.accepts('application/json', 'x-www-form-urlencoded') === 'application/json') {
+    actionid = req.query.actionid;
+    desc = req.query.desc;
+  }
   if (actionid === undefined || desc === undefined) {
     res.json(422, { error: "ActionID and Description are required!" });
   } else {
@@ -236,8 +244,16 @@ app.get('/status/:tracking_number', function(req, res) {
 });
 
 app.put('/update', function(req, res) {
-  var tracking_number = req.body.tracking_number;
-  var desc = req.body.desc;
+  var tracking_number = '',
+      desc = '';
+    
+  if (req.accepts('application/json', 'x-www-form-urlencoded') === 'x-www-form-urlencoded') {
+    tracking_number = req.body.tracking_number;
+    desc = req.body.desc;
+  } else if (req.accepts('application/json', 'x-www-form-urlencoded') === 'application/json') {
+    tracking_number = req.query.tracking_number;
+    desc = req.query.desc;
+  }
   if (tracking_number === undefined || desc === undefined) {
     res.json(422, { error: "tracking_number and description (desc) are required!" });
   } else {
