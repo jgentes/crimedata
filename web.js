@@ -213,13 +213,10 @@ function crime_status(startdate, enddate, citystate, res) {
 }
 
 app.post('/new', function(req, res) {
-  var actionid = '',
-      desc = '';
+  var actionid = req.body.actionid,
+      desc = req.body.desc;
   
-  if (req.accepts('application/json', 'x-www-form-urlencoded') === 'x-www-form-urlencoded') {
-    actionid = req.body.actionid;
-    desc = req.body.desc;
-  } else if (req.accepts('application/json', 'x-www-form-urlencoded') === 'application/json') {
+  if (actionid === undefined && desc === undefined) {
     actionid = req.query.actionid;
     desc = req.query.desc;
   }
@@ -244,13 +241,10 @@ app.get('/status/:tracking_number', function(req, res) {
 });
 
 app.put('/update', function(req, res) {
-  var tracking_number = '',
-      desc = '';
+  var tracking_number = req.body.tracking_number,
+      desc = req.body.desc;
     
-  if (req.accepts('application/json', 'x-www-form-urlencoded') === 'x-www-form-urlencoded') {
-    tracking_number = req.body.tracking_number;
-    desc = req.body.desc;
-  } else if (req.accepts('application/json', 'x-www-form-urlencoded') === 'application/json') {
+  if (tracking_number === undefined && desc === undefined) {
     tracking_number = req.query.tracking_number;
     desc = req.query.desc;
   }
