@@ -212,7 +212,7 @@ function crime_status(startdate, enddate, citystate, res) {
  
 }
 
-app.post('/new', function(req, res) {
+app.post('/new', bodyParser(), function(req, res) {
   var actionid = req.body.actionid,
       desc = req.body.desc;
   
