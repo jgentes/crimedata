@@ -32,8 +32,8 @@ casper.test.begin('Submit request to Spokane Valley e-Gov', function(test) {
        });
    casper.then(function() {
        this.wait(3000, function() {
-           tracking_number = this.fetchText('.groupSmall p b');
-           //tracking_number = 7474491301;
+           //tracking_number = this.fetchText('.groupSmall p b');
+           tracking_number = 7474491301;
            if (tracking_number == '') {
                tracking_number = 'None!';
            };
