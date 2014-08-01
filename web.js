@@ -230,9 +230,9 @@ app.post('/new', function(req, res) {
 app.get('/status/:tracking_number', function(req, res) {
   var tracking_number = req.params.tracking_number;
   var showall = req.query.showall;
-  console.log(showall);
-  if (!showall || showall==='false') { showall = false;
-    console.log(showall);}
+  
+  if (!showall || showall==='false') { showall = false; }
+  
   if (tracking_number === undefined) {
     res.json(422, { error: "tracking_number is required!" });
   } else {
