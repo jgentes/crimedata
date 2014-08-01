@@ -10,7 +10,7 @@ casper.on('page.error', function(msg, trace) {
 });
 casper.test.begin('Submit request to Spokane Valley e-Gov', function(test) {
    var actionid = casper.cli.options.actionid;
-   var desc = toString(casper.cli.options.desc);
+   var desc = casper.cli.options.desc;
    var tracking_number = '';
    
    casper.start('http://www.egovlink.com/spokanevalley/action.asp?actionid=' + actionid);
@@ -32,8 +32,8 @@ casper.test.begin('Submit request to Spokane Valley e-Gov', function(test) {
        });
    casper.then(function() {
        this.wait(3000, function() {
-           //tracking_number = this.fetchText('.groupSmall p b');
-           tracking_number = 7474491301;
+           tracking_number = this.fetchText('.groupSmall p b');
+           //tracking_number = 7474491301;
            if (tracking_number == '') {
                tracking_number = 'None!';
            };
