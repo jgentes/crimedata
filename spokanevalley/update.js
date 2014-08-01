@@ -30,7 +30,7 @@ casper.test.begin('Update existing request on Spokane Valley e-Gov', function(te
    });
    casper.waitForSelector("form[name=frmPost] input[type=button][value='POST MESSAGE']",
        function() {
-           //this.click("form[name=frmPost] input[type=button][value='POST MESSAGE']");
+           this.click("form[name=frmPost] input[type=button][value='POST MESSAGE']");
            console.log("Tracking Number: " + tracking_number);
    });
 
