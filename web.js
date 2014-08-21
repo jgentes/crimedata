@@ -154,6 +154,7 @@ function crime_status(startdate, enddate, citystate, res) {
             var ymin = coords[1] - 2144.382611;
             var ymax = coords[1] + 2145.645602;
             
+            // Types of crime to show: Arson (AR), Assault (AS), Burglary (BU), Disturbing the Peace (DP), Drugs/Alcohol Violations (DR), DUI (DU), Fraud (FR), Homicide (HO), Motor Vehicle Theft (VT), Robbery (RO), Sex Crimes (SX), Theft/Larceny (TH), Vandalism (VA), Vehicle Break-in/Theft (VB), Weapons (WE)
             var urlparams = '?db=' + startdate + '+00:00:00&de=' + enddate + '+00:00:00&ccs=AR,AS,BU,DP,DR,DU,FR,HO,VT,RO,SX,TH,VA,VB,WE&add=' + citystate + '&xmin=' + xmin + '&ymin=' + ymin + '&xmax=' + xmax + '&ymax=' + ymax;
             
             request.get(
@@ -174,7 +175,8 @@ function crime_status(startdate, enddate, citystate, res) {
                           crime_x = '',
                           crime_y = '',
                           crime_coords = [],
-                          crimes = [];
+                          crimes = [],
+                          id = '';
                       
                       for (var i=2; i < rows.length; i++) {
                         crime_desc = rows[i].childNodes[1].childNodes[0].childNodes[0].nodeValue;
@@ -186,8 +188,9 @@ function crime_status(startdate, enddate, citystate, res) {
                         crime_x = crime_loc.substr(c1 + 3, c2 - c1 - 4);
                         crime_y = crime_loc.substr(c2 + 3, c3 - c2 - 4);
                         crime_coords = inverseMercator(crime_x, crime_y);
+                        id = ''.concat(Date.parse(crime_datetime, 'MM/d/yyyy h:m a'), Math.abs(crime_x), Math.abs(crime_y));
                         
-                        crimes.push({'description': crime_desc, 'datetime': crime_datetime, 'location': crime_coords});
+                        crimes.push({'id': id, 'description': crime_desc, 'datetime': crime_datetime, 'lat': crime_coords[0], 'long': crime_coords[1]});
                         
                       }
                       
