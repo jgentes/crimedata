@@ -265,7 +265,7 @@ app.get('/crime', function(req, res) {
   var enddate = req.query.enddate;
   var lat = req.query.lat;
   var long = req.query.long;
-  if (startdate === undefined || enddate === undefined || lat === undefined, long === undefined) {
+  if (startdate === undefined || enddate === undefined || lat === undefined || long === undefined) {
     res.json(422, { error: "startdate, enddate (ie 6/19/2014) and lat/long are required!" });
   } else {
     crime_status(startdate, enddate, lat, long, res);
