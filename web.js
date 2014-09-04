@@ -131,89 +131,87 @@ function toMercator (lon, lat) {
   return [x, y];
   }
 
-function crime_status(startdate, enddate, citystate, res) {
+function crime_status(startdate, enddate, lat, long, res) {
   
   console.log("Start Date: " + startdate);
   console.log("End Date: " + enddate);
-  console.log("City, State: " + citystate);
+  console.log("Lat, Long: " + lat + ', ' + long);
   
+  /* OLD CODE TO RETRIEVE LAT/LONG FROM GOOGLE MAPS
   request.get(
     'https://maps.googleapis.com/maps/api/geocode/json?address=' + citystate + '&key=' + googlegeocodekey,
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
-          
-          try {
-            var results = JSON.parse(body);
-            var lat = results['results'][0]['geometry']['location']['lat'];
-            var long = results['results'][0]['geometry']['location']['lng'];
-            console.log('Lat: ' + lat, 'Long: ' + long);
-            var coords = toMercator(long, lat);
-          
-            var xmin = coords[0] - 4585.47681;
-            var xmax = coords[0] + 4586.966585;
-            var ymin = coords[1] - 2144.382611;
-            var ymax = coords[1] + 2145.645602;
-            
-            // Types of crime to show: Arson (AR), Assault (AS), Burglary (BU), Disturbing the Peace (DP), Drugs/Alcohol Violations (DR), DUI (DU), Fraud (FR), Homicide (HO), Motor Vehicle Theft (VT), Robbery (RO), Sex Crimes (SX), Theft/Larceny (TH), Vandalism (VA), Vehicle Break-in/Theft (VB), Weapons (WE)
-            var urlparams = '?db=' + startdate + '+00:00:00&de=' + enddate + '+00:00:00&ccs=AR,AS,BU,DP,DR,DU,FR,HO,VT,RO,SX,TH,VA,VB,WE&add=' + citystate + '&xmin=' + xmin + '&ymin=' + ymin + '&xmax=' + xmax + '&ymax=' + ymax;
-            
-            request.get(
-              'http://www.crimemapping.com/DetailedReport.aspx' + urlparams,
-              function (error, response, body) {
-                  if (!error && response.statusCode == 200) {
-                    var jsdom = require("jsdom");
-            
-                    jsdom.env(body, ["http://code.jquery.com/jquery.js"],
-                    function (errors, window) {
-                      var rows = window.$('.report-grid').find('tr');
-                      var crime_desc = '',
-                          crime_datetime = '',
-                          crime_loc = '',
-                          c1 = '',
-                          c2 = '',
-                          c3 = '',
-                          crime_x = '',
-                          crime_y = '',
-                          crime_coords = [],
-                          crimes = [],
-                          id = '';
-                      
-                      for (var i=2; i < rows.length; i++) {
-                        crime_desc = rows[i].childNodes[1].childNodes[0].childNodes[0].nodeValue;
-                        crime_datetime = rows[i].childNodes[5].childNodes[0].childNodes[0].nodeValue;
-                        crime_loc = rows[i].attributes.onclick.value;
-                        c1 = crime_loc.indexOf(',');
-                        c2 = crime_loc.indexOf(',', c1 + 1);
-                        c3 = crime_loc.indexOf(',', c2 + 1);
-                        crime_x = crime_loc.substr(c1 + 3, c2 - c1 - 4);
-                        crime_y = crime_loc.substr(c2 + 3, c3 - c2 - 4);
-                        crime_coords = inverseMercator(crime_x, crime_y);
-                        id = ''.concat(Date.parse(crime_datetime, 'MM/d/yyyy h:m a'), Math.abs(crime_x), Math.abs(crime_y));
-                        
-                        crimes.push({'id': id, 'description': crime_desc, 'datetime': crime_datetime, 'lat': crime_coords[0], 'long': crime_coords[1]});
-                        
-                      }
-                      
-                      console.log("crimes: " + JSON.stringify(crimes));
-                      res.json(200, crimes);
-                      return;
-                    });
-                    
-                    
-                  } else { res.json(400, error); return; }
+        var results = JSON.parse(body);
+        var lat = results['results'][0]['geometry']['location']['lat'];
+        var long = results['results'][0]['geometry']['location']['lng'];
+        console.log('Lat: ' + lat, 'Long: ' + long);
+  */ 
+  
+  try {
+    
+    var coords = toMercator(long, lat);  
+    var xmin = coords[0] - 4585.47681;
+    var xmax = coords[0] + 4586.966585;
+    var ymin = coords[1] - 2144.382611;
+    var ymax = coords[1] + 2145.645602;
+    
+    // Types of crime to show: Arson (AR), Assault (AS), Burglary (BU), Disturbing the Peace (DP), Drugs/Alcohol Violations (DR), DUI (DU), Fraud (FR), Homicide (HO), Motor Vehicle Theft (VT), Robbery (RO), Sex Crimes (SX), Theft/Larceny (TH), Vandalism (VA), Vehicle Break-in/Theft (VB), Weapons (WE)
+    var urlparams = '?db=' + startdate + '+00:00:00&de=' + enddate + '+00:00:00&ccs=AR,AS,BU,DP,DR,DU,FR,HO,VT,RO,SX,TH,VA,VB,WE&xmin=' + xmin + '&ymin=' + ymin + '&xmax=' + xmax + '&ymax=' + ymax;
+    
+    request.get(
+      'http://www.crimemapping.com/DetailedReport.aspx' + urlparams,
+      function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            var jsdom = require("jsdom");
+    
+            jsdom.env(body, ["http://code.jquery.com/jquery.js"],
+            function (errors, window) {
+              var rows = window.$('.report-grid').find('tr');
+              var crime_desc = '',
+                  crime_datetime = '',
+                  crime_loc = '',
+                  c1 = '',
+                  c2 = '',
+                  c3 = '',
+                  crime_x = '',
+                  crime_y = '',
+                  crime_coords = [],
+                  crimes = [],
+                  id = '';
+              
+              for (var i=2; i < rows.length; i++) {
+                crime_desc = rows[i].childNodes[1].childNodes[0].childNodes[0].nodeValue;
+                crime_datetime = rows[i].childNodes[5].childNodes[0].childNodes[0].nodeValue;
+                crime_loc = rows[i].attributes.onclick.value;
+                c1 = crime_loc.indexOf(',');
+                c2 = crime_loc.indexOf(',', c1 + 1);
+                c3 = crime_loc.indexOf(',', c2 + 1);
+                crime_x = crime_loc.substr(c1 + 3, c2 - c1 - 4);
+                crime_y = crime_loc.substr(c2 + 3, c3 - c2 - 4);
+                crime_coords = inverseMercator(crime_x, crime_y);
+                id = ''.concat(Date.parse(crime_datetime, 'MM/d/yyyy h:m a'), Math.abs(crime_x), Math.abs(crime_y));
+                
+                crimes.push({'id': id, 'description': crime_desc, 'datetime': crime_datetime, 'lat': crime_coords[0], 'long': crime_coords[1]});
+                
               }
-            );
+              
+              console.log("crimes: " + JSON.stringify(crimes));
+              res.json(200, crimes);
+              return;
+            });
             
-          } catch(err) {
-            console.log(err);
-            res.json(400, results);
-          }
-          
-        } else { res.json(400, error); return; }
-    }
-  );
- 
-}
+            
+          } else { res.json(400, error); return; }
+      }
+    );
+    
+  } catch(err) {
+    console.log(err);
+    res.json(400, results);
+  }
+  
+} else { res.json(400, error); return; }
 
 app.post('/new', function(req, res) {
   var actionid = req.body.actionid,
@@ -267,11 +265,12 @@ app.get('/', function(req, res) {
 app.get('/crime', function(req, res) {
   var startdate = req.query.startdate;
   var enddate = req.query.enddate;
-  var citystate = req.query.citystate;
-  if (startdate === undefined || enddate === undefined || citystate === undefined) {
-    res.json(422, { error: "startdate, enddate (ie 6/19/2014) and citystate (ie Detroit, Michigan) are required!" });
+  var lat = req.query.lat;
+  var long = req.query.long;
+  if (startdate === undefined || enddate === undefined || lat === undefined, long === undefined) {
+    res.json(422, { error: "startdate, enddate (ie 6/19/2014) and lat/long are required!" });
   } else {
-    crime_status(startdate, enddate, citystate, res);
+    crime_status(startdate, enddate, lat, long, res);
   }
 });
 
