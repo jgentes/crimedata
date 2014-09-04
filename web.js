@@ -208,10 +208,8 @@ function crime_status(startdate, enddate, lat, long, res) {
     
   } catch(err) {
     console.log(err);
-    res.json(400, results);
+    res.json(400, err);
   }
-  
-} else { res.json(400, error); return; }
 
 app.post('/new', function(req, res) {
   var actionid = req.body.actionid,
