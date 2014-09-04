@@ -210,6 +210,8 @@ function crime_status(startdate, enddate, lat, long, res) {
     console.log(err);
     res.json(400, err);
   }
+  
+}
 
 app.post('/new', function(req, res) {
   var actionid = req.body.actionid,
