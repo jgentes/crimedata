@@ -123,13 +123,19 @@ function inverseMercator(x, y) {
   return [lat, lon];
   }
 
-function toMercator (lon, lat) {
-  var x = lon * 20037508.34 / 180;
-  var y = Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180);
-  y = y * 20037508.34 / 180;
- 
-  return [x, y];
-  }
+function convert(ll) {
+    var xy = [
+        6378137.0 * ll[0] * Math.PI / 180,
+        6378137.0 * Math.log(Math.tan((Math.PI*0.25) + (0.5 * ll[1] * Math.PI / 180)))
+    ];
+    var MAXEXTENT = 20037508.342789244;
+    // if xy value is beyond maxextent (e.g. poles), return maxextent.
+    (xy[0] > MAXEXTENT) && (xy[0] = MAXEXTENT);
+    (xy[0] < -MAXEXTENT) && (xy[0] = -MAXEXTENT);
+    (xy[1] > MAXEXTENT) && (xy[1] = MAXEXTENT);
+    (xy[1] < -MAXEXTENT) && (xy[1] = -MAXEXTENT);
+    return xy;
+}
 
 function crime_status(startdate, enddate, lat, long, res) {
   
@@ -150,15 +156,16 @@ function crime_status(startdate, enddate, lat, long, res) {
   
   try {
     
-    var coords = toMercator(long, lat);  
-    var xmin = coords[0] - 4585.47681;
-    var xmax = coords[0] + 4586.966585;
-    var ymin = coords[1] - 2144.382611;
-    var ymax = coords[1] + 2145.645602;
+    var coords = convert([long, lat]);
+    console.log("coords: " + coords);
+    var xmin = coords[0] - 6114.962262975;
+    var xmax = coords[0] + 6114.962262975;
+    var ymin = coords[1] - 2718.2918184635;
+    var ymax = coords[1] + 2718.2918184635;
     
     // Types of crime to show: Arson (AR), Assault (AS), Burglary (BU), Disturbing the Peace (DP), Drugs/Alcohol Violations (DR), DUI (DU), Fraud (FR), Homicide (HO), Motor Vehicle Theft (VT), Robbery (RO), Sex Crimes (SX), Theft/Larceny (TH), Vandalism (VA), Vehicle Break-in/Theft (VB), Weapons (WE)
     var urlparams = '?db=' + startdate + '+00:00:00&de=' + enddate + '+00:00:00&ccs=AR,AS,BU,DP,DR,DU,FR,HO,VT,RO,SX,TH,VA,VB,WE&xmin=' + xmin + '&ymin=' + ymin + '&xmax=' + xmax + '&ymax=' + ymax;
-    
+    console.log('http://www.crimemapping.com/DetailedReport.aspx' + urlparams);
     request.get(
       'http://www.crimemapping.com/DetailedReport.aspx' + urlparams,
       function (error, response, body) {
